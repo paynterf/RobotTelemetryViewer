@@ -23,8 +23,8 @@ namespace RobotTelemetryViewer
     public partial class frm_Main : Form
     {
         List<Frame> frames = new List<Frame>();
-        bool verbose = false;
-        bool more_verbose = true;
+        bool verbose = true;
+        bool more_verbose = false;
         bool first_time_pBox_draw = true;//force pBox resize one-time to init scrollbar
         float ZoomFactor = 1;//04/09/23 added to allow zoom in/out using CTRL mousewheel
 
@@ -100,6 +100,7 @@ namespace RobotTelemetryViewer
         private bool GetFrameDataFromRobotTelemetryFile()
         {
             bool result = false;
+            string CurTrackDir = "";
 
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
@@ -112,17 +113,18 @@ namespace RobotTelemetryViewer
                     int counter = 0;
                     string ln;
 
+                    //04/10/23 rewritten to consume entire telemetry file, skipping non-telemetry lines 
                     while ((ln = file.ReadLine()) != null)
                     {
                         if (verbose)
                         {
-                            System.Diagnostics.Debug.WriteLine(ln);
+                            Debug.WriteLine(ln);
                             counter++;
                         }
 
                         try
                         {
-                            Frame frame = new Frame(ln);
+                            Frame frame = new Frame(ln, CurTrackDir);
                             frames.Add(frame);
 
                             if (more_verbose)
@@ -133,8 +135,19 @@ namespace RobotTelemetryViewer
                         }
                         catch (Exception e)
                         {
+                            Debug.WriteLine($"failed to add frame to list, message = {e.Message}");
 
-                            System.Diagnostics.Debug.WriteLine($"failed to add frame to list, message = {e.Message}");
+                            //check for line containing 'TrackLeftWallOffset:' or 'TrackRightWallOffset:'
+                            if (ln.Contains("TrackLeftWallOffset:")) 
+                            {
+                                //tracking left side. 
+                                CurTrackDir = "TRK_LEFT";
+                            }
+                            if (ln.Contains("TrackRightWallOffset:")) 
+                            {
+                                //tracking left side. 
+                                CurTrackDir = "TRK_RIGHT";
+                            }
                         }
                     }
 

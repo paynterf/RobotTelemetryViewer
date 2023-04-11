@@ -21,8 +21,7 @@ namespace ScrollingExample
         {
             TRK_NONE = 0,
             TRK_LEFT, 
-            TRK_RIGHT,
-            TRK_NEITHER
+            TRK_RIGHT
         }
         private TRKDIR trkdir;
         private float sec;
@@ -88,7 +87,7 @@ namespace ScrollingExample
         }
 
         //04/09/23 added TRKDIR property to frame as last item in line
-        public Frame(String line)
+        public Frame(String line, string curTrackStr)
         {
             try
             {
@@ -102,21 +101,17 @@ namespace ScrollingExample
                 hdgdeg = Convert.ToSingle(pieces[7]);
 
                 //track direction takes more work
-                if (pieces[9] == "TRK_LEFT")
+                if (curTrackStr == "TRK_LEFT")
                 {
                     trkdir = TRKDIR.TRK_LEFT;
                 }
-                else if (pieces[9] == "TRK_RIGHT")
+                else if (curTrackStr == "TRK_RIGHT")
                 {
                     trkdir = TRKDIR.TRK_RIGHT;
                 }
-                else if (pieces[9] == "TRK_NEITHER")
+                else
                 {
-                    trkdir = TRKDIR.TRK_NEITHER;
-                }
-                else 
-                {
-                    Debug.WriteLine($"pieces[9] ({pieces[9]} was not recognized as a TRKDIR enum option");
+                    Debug.WriteLine($"pieces[8] ({pieces[8]} was not recognized as a TRKDIR enum option");
                     trkdir = TRKDIR.TRK_NONE;
                 }
 
@@ -152,9 +147,6 @@ namespace ScrollingExample
                     break;
                 case TRKDIR.TRK_RIGHT:
                     RobotPen.Color = Color.Green;
-                    break;
-                case TRKDIR.TRK_NEITHER:
-                    RobotPen.Color = Color.Black;
                     break;
                 default:
                     break;
