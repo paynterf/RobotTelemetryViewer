@@ -31,6 +31,7 @@ namespace RobotTelemetryViewer
         //moved to global so can use in ReSize event
         float y_extent_mm = 0;
         float x_extent_mm = 0;
+        int numFrames = 0;
 
         public frm_Main()
         {
@@ -39,18 +40,28 @@ namespace RobotTelemetryViewer
         }
         private void LoadTelemetry()
         {
-            GetFrameDataFromRobotTelemetryFile();
-            pictureBox1.Invalidate();
+            numFrames = GetFrameDataFromRobotTelemetryFile();//4/11/23 rev to return number of frames loaded
+
+            if (numFrames >= 1 )
+            {
+                tBar_FrameSelect.Maximum = numFrames - 1;//4/11/23 so can select any frame in frames
+                tBar_FrameSelect.Minimum = 0;
+                LoadFrameDataIntoTrkbarReadout(0);
+                pictureBox1.Invalidate();
+            }
 
         }
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
+            //Notes:
+            //  04/11/23 - added capability to show selected frame with red rectangle
+
             Graphics g = e.Graphics;
             int xWidth = pictureBox1.Width;
             int yHeight = pictureBox1.Height;
             Point[] pBoxExtents_mm = { new Point(xWidth, yHeight) };
 
-            //change to mm units with y growng up, origin at bottom
+            //change to mm units with y growing up, origin at bottom
             g.PageUnit = GraphicsUnit.Millimeter;
             g.TransformPoints(CoordinateSpace.Page, CoordinateSpace.Device, pBoxExtents_mm);
 
@@ -61,26 +72,28 @@ namespace RobotTelemetryViewer
             }
 
             g.TranslateTransform(0,  vScrollBar1.Maximum - vScrollBar1.Value);
-            //g.ScaleTransform(1, -1);
-            //g.ScaleTransform(2, -2);
             g.ScaleTransform(ZoomFactor, -ZoomFactor);
 
-            foreach (Frame frame in frames)
+            //change to for loop so have explicit index to match for selection
+            //foreach (Frame frame in frames)
+            for (int idx = 0; idx < frames.Count; idx++)
             {
-                float x = frame.Ldist + frame.Rdist + Frame.ROBOT_WIDTH;
+                //float x = frame.Ldist + frame.Rdist + Frame.ROBOT_WIDTH;
+                float x = frames[idx].Ldist + frames[idx].Rdist + Frame.ROBOT_WIDTH;
 
                 if (x > x_extent_mm)
                 {
                     if (more_verbose)
                     {
-                        frame.print();
+                        frames[idx].print();
                         Debug.WriteLine($"replacing {x_extent_mm} with {x}");
                     }
 
                     x_extent_mm = x;
 
                 }
-                frame.draw(20 * frame.Sec, g);//time x20 used as proxy for dist in mm
+                //frame.draw(20 * frame.Sec, g);//time x20 used as proxy for dist in mm
+                frames[idx].draw(20 * frames[idx].Sec, g, idx == tBar_FrameSelect.Value );//time x20 used as proxy for dist in mm
             }
 
             y_extent_mm = 20*frames[frames.Count-1].Sec;//Sec used as proxy for mm
@@ -97,7 +110,8 @@ namespace RobotTelemetryViewer
                 pictureBox1_Resize(null, null);//force a resize event
             }
         }
-        private bool GetFrameDataFromRobotTelemetryFile()
+        //private bool GetFrameDataFromRobotTelemetryFile()
+        private int GetFrameDataFromRobotTelemetryFile()//4/11/23 rev to return number of frames loaded
         {
             bool result = false;
             string CurTrackDir = "";
@@ -164,7 +178,8 @@ namespace RobotTelemetryViewer
                     result = true;
                 }
             }
-            return result;
+            //return result;
+            return frames.Count;//4/11/23 rev to return number of frames loaded
         }
         private void pictureBox1_Resize(object sender, EventArgs e)
         {
@@ -232,6 +247,24 @@ namespace RobotTelemetryViewer
                 pictureBox1.Invalidate(true);
             }
 
+        }
+
+        private void tBar_FrameSelect_ValueChanged(object sender, EventArgs e)
+        {
+            LoadFrameDataIntoTrkbarReadout(tBar_FrameSelect.Value);
+
+            pictureBox1.Invalidate();
+        }
+
+        private void LoadFrameDataIntoTrkbarReadout(int idx)
+        {
+
+            tb_Idx.Text = idx.ToString();
+            Frame frame = frames[idx];
+            tb_Sec.Text = frame.Sec.ToString();
+            tb_Ldist.Text = frame.Ldist.ToString();
+            tb_Rdist.Text = frame.Rdist.ToString();
+            tb_Hdg.Text = frame.Hdgdeg.ToString();
         }
     }
 }

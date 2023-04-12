@@ -132,24 +132,31 @@ namespace ScrollingExample
         }
 
         //void draw(float yloc)
-        public void draw(float yloc, Graphics g)
+        //public void draw(float yloc, Graphics g)
+        public void draw(float yloc, Graphics g, bool bIsSelected)
         {
             //04/09/23 robot colored red for TRK_LEFT, green for TRK_RIGHT, black for TRK_NEITHER
-            Pen RobotPen = new Pen(Color.White);
+            Pen RobotPen = new Pen(Color.Gray);
 
             switch (trkdir)
             {
                 case TRKDIR.TRK_NONE:
-                    RobotPen.Color = Color.White;
+                    RobotPen.Color = Color.Gray;
                     break;
                 case TRKDIR.TRK_LEFT:
-                    RobotPen.Color = Color.Red;
+                    RobotPen.Color = Color.Blue;
                     break;
                 case TRKDIR.TRK_RIGHT:
                     RobotPen.Color = Color.Green;
                     break;
                 default:
                     break;
+            }
+
+            //04/11/23 try at highlighting a selected frame
+            if ( bIsSelected )
+            {
+                RobotPen.Color = Color.Red;
             }
 
             GraphicsState transState = g.Save();
@@ -172,7 +179,6 @@ namespace ScrollingExample
                 //draw rectangle rotated by hdgdeg deg
                 g.TranslateTransform(ldist, 0);
                 g.RotateTransform(-hdgdeg);
-                //g.DrawRectangle(new Pen(Color.Red), 0, 0, 20, 10);
                 g.DrawRectangle(RobotPen, 0, 0, 20, 10);
 
                 last_good_ldist = ldist;
