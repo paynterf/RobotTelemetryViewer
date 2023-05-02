@@ -75,10 +75,8 @@ namespace RobotTelemetryViewer
             g.ScaleTransform(ZoomFactor, -ZoomFactor);
 
             //change to for loop so have explicit index to match for selection
-            //foreach (Frame frame in frames)
             for (int idx = 0; idx < frames.Count; idx++)
             {
-                //float x = frame.Ldist + frame.Rdist + Frame.ROBOT_WIDTH;
                 float x = frames[idx].Ldist + frames[idx].Rdist + Frame.ROBOT_WIDTH;
 
                 if (x > x_extent_mm)
@@ -265,6 +263,9 @@ namespace RobotTelemetryViewer
             tb_Ldist.Text = frame.Ldist.ToString();
             tb_Rdist.Text = frame.Rdist.ToString();
             tb_Hdg.Text = frame.Hdgdeg.ToString();
+            tb_TrkDir.Text = frame.TrackDir.ToString();
+            tb_WrongSideCnt.Text = frame.WrongWallCount.ToString();
+            tb_AnomalyCode.Text = frame.AnomalyCode;
         }
     }
 }

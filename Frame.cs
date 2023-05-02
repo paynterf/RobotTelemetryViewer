@@ -23,6 +23,7 @@ namespace ScrollingExample
             TRK_LEFT, 
             TRK_RIGHT
         }
+
         private TRKDIR trkdir;
         private float sec;
         private float ldist;
@@ -30,6 +31,14 @@ namespace ScrollingExample
         private float fwdpos;
         private float rearpos;
         private float hdgdeg;
+        private string anomalyCode;
+        private int wrongWallCount;
+
+        public int WrongWallCount
+        {
+            get { return wrongWallCount; }
+            set { wrongWallCount = value; }
+        }
 
         public TRKDIR TrackDir
         {
@@ -66,6 +75,15 @@ namespace ScrollingExample
             get { return sec; }
             set { sec = value; }
         }
+        public string AnomalyCode
+        {
+            get { return anomalyCode; }
+            set { anomalyCode = value; }
+        }
+
+        public string[] AnomalyCodeStrArray = new string[] { "\"NONE\", \"STUCK_AHEAD\", \"STUCK_BEHIND\", " +
+            "\"OBSTACLE_AHEAD\", \"WALL_OFFSET_DIST_AHEAD\",\"OBSTACLE_BEHIND\", \"OPEN_CORNER\", " +
+            "\"DEAD_BATTERY\", \"CHARGER_CONNECTED\", \"OPEN_DOORWAY\", \"WRONG_WALL\"" };
 
         //geometry in mm
         public static int MAX_LR_DIST = 200;
@@ -75,7 +93,7 @@ namespace ScrollingExample
         static float last_good_ldist = 0;
         static float last_good_rdist = 0;
 
-        public Frame(float s, float l, float r, float f, float rear, float h, TRKDIR dir)
+        public Frame(float s, float l, float r, float f, float rear, float h, TRKDIR dir, string anomalycode)
         {
             sec = s;
             ldist = l;
@@ -99,6 +117,8 @@ namespace ScrollingExample
                 fwdpos = Convert.ToSingle(pieces[3]);
                 rearpos = Convert.ToSingle(pieces[4]);
                 hdgdeg = Convert.ToSingle(pieces[7]);
+                wrongWallCount = Convert.ToInt16(pieces[8]);
+                anomalyCode = pieces[9];
 
                 //track direction takes more work
                 if (curTrackStr == "TRK_LEFT")
@@ -127,7 +147,6 @@ namespace ScrollingExample
         }
         public void print()
         {
-            //System.Diagnostics.Debug.Print("%2.2f\t%2.2f\t%2.2f\t%2.2f\t%2.2f\t\n", sec, ldist, rdist, fwdpos, rearpos, hdgdeg);
             System.Diagnostics.Debug.Print($"{sec}\t{ldist}\t{rdist}\t{fwdpos}\t{rearpos}\t{hdgdeg}");
         }
 
