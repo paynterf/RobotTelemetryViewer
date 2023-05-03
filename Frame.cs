@@ -86,12 +86,15 @@ namespace ScrollingExample
             "\"DEAD_BATTERY\", \"CHARGER_CONNECTED\", \"OPEN_DOORWAY\", \"WRONG_WALL\"" };
 
         //geometry in mm
-        public static int MAX_LR_DIST = 200;
+        //public static int MAX_LR_DIST = 200;
+        public static int MAX_LR_DIST = 400;//05/02/23
         public static int ROBOT_WIDTH = 20;
         public static int ROBOT_HEIGHT = 15;
 
         static float last_good_ldist = 0;
         static float last_good_rdist = 0;
+
+
 
         public Frame(float s, float l, float r, float f, float rear, float h, TRKDIR dir, string anomalycode)
         {
@@ -156,6 +159,10 @@ namespace ScrollingExample
         {
             //04/09/23 robot colored red for TRK_LEFT, green for TRK_RIGHT, black for TRK_NEITHER
             Pen RobotPen = new Pen(Color.Gray);
+            Pen SelectPen = new Pen(Color.Red);
+            Pen LeftPen = new Pen(Color.Yellow);
+            Pen RightPen = new Pen(Color.Green);
+            Pen TooFarPen = new Pen(Color.Gray);
 
             switch (trkdir)
             {
@@ -175,7 +182,7 @@ namespace ScrollingExample
             //04/11/23 try at highlighting a selected frame
             if ( bIsSelected )
             {
-                RobotPen.Color = Color.Red;
+                RobotPen = SelectPen;
             }
 
             GraphicsState transState = g.Save();
@@ -183,16 +190,25 @@ namespace ScrollingExample
 
             if (ldist < MAX_LR_DIST)
             {
-                g.DrawRectangle(new Pen(Color.Yellow), 0, 0, 1, 3);//wall symbol; used to be an ellipse
+                g.DrawRectangle(LeftPen, 0, 0, 1, 3);//wall symbol; used to be an ellipse
+                if (bIsSelected)
+                {
+                    g.DrawRectangle(SelectPen, 0, 0, 1, 3);//wall symbol; used to be an ellipse
+                }
 
                 //right-hand border takes more work
                 if (rdist < MAX_LR_DIST)
                 {
-                    g.DrawEllipse(new Pen(Color.Yellow), ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
+                    g.DrawEllipse(RightPen, ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
+
+                    if (bIsSelected)
+                    {
+                        g.DrawEllipse(SelectPen, ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
+                    }
                 }
                 else
                 {
-                    g.DrawEllipse(new Pen(Color.Red), ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
+                    g.DrawEllipse(TooFarPen, ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
                 }
 
                 //draw rectangle rotated by hdgdeg deg
@@ -205,8 +221,8 @@ namespace ScrollingExample
             }
             else if (ldist >= MAX_LR_DIST && rdist < MAX_LR_DIST)
             {
-                g.DrawEllipse(new Pen(Color.Yellow), last_good_ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
-                g.DrawRectangle(new Pen(Color.Red), 0, 0, 1, 3);
+                g.DrawEllipse(RightPen, last_good_ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
+                g.DrawRectangle(TooFarPen, 0, 0, 1, 3);
             }
 
             g.Restore(transState);
