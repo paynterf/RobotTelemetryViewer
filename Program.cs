@@ -16,7 +16,14 @@ namespace RobotTelemetryViewer
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frm_Main());
+            try
+            {
+                Application.Run(new frm_Main());
+            }
+            catch (Exception)
+            {
+                Application.Exit();
+            }
         }
     }
 }

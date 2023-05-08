@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
-namespace ScrollingExample
+namespace RobotTelemetryViewer
 {
 
     public class Frame
@@ -20,7 +20,7 @@ namespace ScrollingExample
         public enum TRKDIR
         {
             TRK_NONE = 0,
-            TRK_LEFT, 
+            TRK_LEFT,
             TRK_RIGHT
         }
 
@@ -108,11 +108,11 @@ namespace ScrollingExample
         }
 
         //04/09/23 added TRKDIR property to frame as last item in line
-        public Frame(String line, string curTrackStr)
+        public Frame(string line, string curTrackStr)
         {
             try
             {
-                String[] pieces = line.Split('\t');
+                string[] pieces = line.Split('\t');
 
                 sec = Convert.ToSingle(pieces[0]);
                 ldist = Convert.ToSingle(pieces[1]);
@@ -134,23 +134,26 @@ namespace ScrollingExample
                 }
                 else
                 {
-                    Debug.WriteLine($"pieces[8] ({pieces[8]} was not recognized as a TRKDIR enum option");
+                    if (frm_Main.more_verbose)
+                    {
+                        Debug.WriteLine($"pieces[8] ({pieces[8]} was not recognized as a TRKDIR enum option");
+                    }
                     trkdir = TRKDIR.TRK_NONE;
                 }
-
-
-
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to construct Frame object with error {e.Message}");
-                System.Diagnostics.Debug.WriteLine($"offending line was {line}");
+                if (frm_Main.more_verbose)
+                {
+                    Debug.WriteLine($"Failed to construct Frame object with error {e.Message}");
+                    Debug.WriteLine($"offending line was {line}");
+                }
                 throw new ArgumentOutOfRangeException();
             }
         }
         public void print()
         {
-            System.Diagnostics.Debug.Print($"{sec}\t{ldist}\t{rdist}\t{fwdpos}\t{rearpos}\t{hdgdeg}");
+            Debug.Print($"{sec}\t{ldist}\t{rdist}\t{fwdpos}\t{rearpos}\t{hdgdeg}");
         }
 
         //void draw(float yloc)
@@ -180,13 +183,13 @@ namespace ScrollingExample
             }
 
             //04/11/23 try at highlighting a selected frame
-            if ( bIsSelected )
+            if (bIsSelected)
             {
                 RobotPen = SelectPen;
             }
 
             GraphicsState transState = g.Save();
-            g.TranslateTransform(0, (int)(yloc));//04/08/23 moved the '20*' from here to frm_main so more obvious
+            g.TranslateTransform(0, (int)yloc);//04/08/23 moved the '20*' from here to frm_main so more obvious
 
             if (ldist < MAX_LR_DIST)
             {
@@ -230,7 +233,7 @@ namespace ScrollingExample
             //another try at upright text
             GraphicsState txt_transState = g.Save();
 
-            g.TranslateTransform(0, (int)(yloc));//04/08/23 moved the '20*' from here to frm_main so more obvious
+            g.TranslateTransform(0, (int)yloc);//04/08/23 moved the '20*' from here to frm_main so more obvious
             g.ScaleTransform(1, -1);
             Brush brush = new SolidBrush(Color.Black);
             float sec = yloc / 20;

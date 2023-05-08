@@ -1,5 +1,4 @@
-﻿using ScrollingExample;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,8 +22,11 @@ namespace RobotTelemetryViewer
     public partial class frm_Main : Form
     {
         List<Frame> frames = new List<Frame>();
-        bool verbose = true;
-        bool more_verbose = false;
+
+        //05/04/23 chg to public static so can access from frame.cs
+        public static bool verbose = false;
+        public static bool more_verbose = false;
+
         bool first_time_pBox_draw = true;//force pBox resize one-time to init scrollbar
         float ZoomFactor = 1;//04/09/23 added to allow zoom in/out using CTRL mousewheel
 
@@ -48,6 +50,14 @@ namespace RobotTelemetryViewer
                 tBar_FrameSelect.Minimum = 0;
                 LoadFrameDataIntoTrkbarReadout(0);
                 pictureBox1.Invalidate();
+            }
+            else
+            {
+                Debug.WriteLine("No Frames Found - Quitting!");
+                MessageBox.Show("No Frames Found - Quitting", "No Frames Found!",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
+                Application.Exit();
+
             }
 
         }
@@ -116,6 +126,7 @@ namespace RobotTelemetryViewer
 
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            ofd.Title = "Robot Telemetry File";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 Debug.WriteLine(ofd.FileName);
@@ -147,7 +158,10 @@ namespace RobotTelemetryViewer
                         }
                         catch (Exception e)
                         {
-                            Debug.WriteLine($"failed to add frame to list, message = {e.Message}");
+                            if(more_verbose)
+                            {
+                                Debug.WriteLine($"failed to add frame to list, message = {e.Message}");
+                            }
 
                             //check for line containing 'TrackLeftWallOffset:' or 'TrackRightWallOffset:'
                             if (ln.Contains("TrackLeftWallOffset:")) 
@@ -209,7 +223,7 @@ namespace RobotTelemetryViewer
                 vScrollBar1.Visible = false;
             }
 
-            if (more_verbose)
+            //if (more_verbose)
             {
                 Debug.WriteLine($"x, y extents (pix) = ({data_extent_pt_pix[0].X}, {data_extent_pt_pix[0].X})");
             }
@@ -241,7 +255,11 @@ namespace RobotTelemetryViewer
                     //zooming out
                     ZoomFactor = ZoomFactor / 2;
                 }
-                Debug.WriteLine($"Zoom factor set to {ZoomFactor}");
+
+                if(verbose )
+                {
+                    Debug.WriteLine($"Zoom factor set to {ZoomFactor}");
+                }
                 pictureBox1.Invalidate(true);
             }
 
@@ -263,6 +281,8 @@ namespace RobotTelemetryViewer
             tb_Ldist.Text = frame.Ldist.ToString();
             tb_Rdist.Text = frame.Rdist.ToString();
             tb_Hdg.Text = frame.Hdgdeg.ToString();
+            tb_RearDist.Text = frame.Rearpos.ToString();
+            tb_Fdist.Text = frame.Fwdpos.ToString();
             tb_TrkDir.Text = frame.TrackDir.ToString();
             tb_WrongSideCnt.Text = frame.WrongWallCount.ToString();
             tb_AnomalyCode.Text = frame.AnomalyCode;

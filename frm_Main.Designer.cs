@@ -48,14 +48,18 @@
             this.tb_Sec = new System.Windows.Forms.TextBox();
             this.tb_Rdist = new System.Windows.Forms.TextBox();
             this.tb_Ldist = new System.Windows.Forms.TextBox();
-            this.tb_Hdg = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.tb_TrkDir = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.tb_AnomalyCode = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.tb_WrongSideCnt = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label13 = new System.Windows.Forms.Label();
+            this.tb_Fdist = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.tb_Hdg = new System.Windows.Forms.TextBox();
+            this.tb_TrkDir = new System.Windows.Forms.TextBox();
+            this.tb_RearDist = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             this.gBox1.SuspendLayout();
@@ -183,7 +187,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(161, 35);
+            this.label2.Location = new System.Drawing.Point(163, 35);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(24, 16);
             this.label2.TabIndex = 4;
@@ -193,7 +197,7 @@
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(154, 63);
+            this.label3.Location = new System.Drawing.Point(156, 65);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(31, 16);
             this.label3.TabIndex = 4;
@@ -203,7 +207,7 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(150, 91);
+            this.label4.Location = new System.Drawing.Point(152, 95);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(35, 16);
             this.label4.TabIndex = 4;
@@ -213,7 +217,7 @@
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(147, 119);
+            this.label7.Location = new System.Drawing.Point(149, 125);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(38, 16);
             this.label7.TabIndex = 4;
@@ -223,11 +227,11 @@
             // 
             this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(152, 147);
+            this.label8.Location = new System.Drawing.Point(124, 185);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(33, 16);
+            this.label8.Size = new System.Drawing.Size(63, 16);
             this.label8.TabIndex = 4;
-            this.label8.Text = "Hdg";
+            this.label8.Text = "Rear Dist";
             // 
             // tb_Idx
             // 
@@ -240,7 +244,7 @@
             // tb_Sec
             // 
             this.tb_Sec.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_Sec.Location = new System.Drawing.Point(189, 60);
+            this.tb_Sec.Location = new System.Drawing.Point(189, 62);
             this.tb_Sec.Name = "tb_Sec";
             this.tb_Sec.Size = new System.Drawing.Size(47, 22);
             this.tb_Sec.TabIndex = 5;
@@ -248,7 +252,7 @@
             // tb_Rdist
             // 
             this.tb_Rdist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_Rdist.Location = new System.Drawing.Point(189, 116);
+            this.tb_Rdist.Location = new System.Drawing.Point(189, 122);
             this.tb_Rdist.Name = "tb_Rdist";
             this.tb_Rdist.Size = new System.Drawing.Size(47, 22);
             this.tb_Rdist.TabIndex = 5;
@@ -256,42 +260,26 @@
             // tb_Ldist
             // 
             this.tb_Ldist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_Ldist.Location = new System.Drawing.Point(189, 88);
+            this.tb_Ldist.Location = new System.Drawing.Point(189, 92);
             this.tb_Ldist.Name = "tb_Ldist";
             this.tb_Ldist.Size = new System.Drawing.Size(47, 22);
             this.tb_Ldist.TabIndex = 5;
-            // 
-            // tb_Hdg
-            // 
-            this.tb_Hdg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_Hdg.Location = new System.Drawing.Point(189, 144);
-            this.tb_Hdg.Name = "tb_Hdg";
-            this.tb_Hdg.Size = new System.Drawing.Size(47, 22);
-            this.tb_Hdg.TabIndex = 5;
             // 
             // label9
             // 
             this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(116, 175);
+            this.label9.Location = new System.Drawing.Point(110, 245);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(44, 16);
             this.label9.TabIndex = 4;
             this.label9.Text = "TrkDir";
             // 
-            // tb_TrkDir
-            // 
-            this.tb_TrkDir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_TrkDir.Location = new System.Drawing.Point(157, 172);
-            this.tb_TrkDir.Name = "tb_TrkDir";
-            this.tb_TrkDir.Size = new System.Drawing.Size(79, 22);
-            this.tb_TrkDir.TabIndex = 5;
-            // 
             // label10
             // 
             this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(45, 223);
+            this.label10.Location = new System.Drawing.Point(40, 283);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(40, 16);
             this.label10.TabIndex = 4;
@@ -301,7 +289,7 @@
             // 
             this.tb_AnomalyCode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.tb_AnomalyCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_AnomalyCode.Location = new System.Drawing.Point(43, 242);
+            this.tb_AnomalyCode.Location = new System.Drawing.Point(43, 302);
             this.tb_AnomalyCode.Name = "tb_AnomalyCode";
             this.tb_AnomalyCode.Size = new System.Drawing.Size(193, 21);
             this.tb_AnomalyCode.TabIndex = 5;
@@ -310,7 +298,7 @@
             // 
             this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(87, 203);
+            this.label11.Location = new System.Drawing.Point(86, 275);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(100, 16);
             this.label11.TabIndex = 4;
@@ -319,7 +307,7 @@
             // tb_WrongSideCnt
             // 
             this.tb_WrongSideCnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_WrongSideCnt.Location = new System.Drawing.Point(189, 200);
+            this.tb_WrongSideCnt.Location = new System.Drawing.Point(189, 272);
             this.tb_WrongSideCnt.Name = "tb_WrongSideCnt";
             this.tb_WrongSideCnt.Size = new System.Drawing.Size(47, 22);
             this.tb_WrongSideCnt.TabIndex = 5;
@@ -332,13 +320,17 @@
             this.panel2.Controls.Add(this.tb_TrkDir);
             this.panel2.Controls.Add(this.tb_WrongSideCnt);
             this.panel2.Controls.Add(this.tb_Hdg);
+            this.panel2.Controls.Add(this.tb_RearDist);
             this.panel2.Controls.Add(this.tb_Ldist);
+            this.panel2.Controls.Add(this.tb_Fdist);
             this.panel2.Controls.Add(this.tb_Rdist);
             this.panel2.Controls.Add(this.label10);
             this.panel2.Controls.Add(this.tb_Sec);
             this.panel2.Controls.Add(this.label9);
             this.panel2.Controls.Add(this.label11);
             this.panel2.Controls.Add(this.tb_Idx);
+            this.panel2.Controls.Add(this.label14);
+            this.panel2.Controls.Add(this.label13);
             this.panel2.Controls.Add(this.label8);
             this.panel2.Controls.Add(this.label7);
             this.panel2.Controls.Add(this.label4);
@@ -349,6 +341,58 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(244, 415);
             this.panel2.TabIndex = 6;
+            // 
+            // label13
+            // 
+            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(151, 155);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(36, 16);
+            this.label13.TabIndex = 4;
+            this.label13.Text = "Fdist";
+            // 
+            // tb_Fdist
+            // 
+            this.tb_Fdist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.tb_Fdist.Location = new System.Drawing.Point(189, 152);
+            this.tb_Fdist.Name = "tb_Fdist";
+            this.tb_Fdist.Size = new System.Drawing.Size(47, 22);
+            this.tb_Fdist.TabIndex = 5;
+            // 
+            // label14
+            // 
+            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(154, 215);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(33, 16);
+            this.label14.TabIndex = 4;
+            this.label14.Text = "Hdg";
+            // 
+            // tb_Hdg
+            // 
+            this.tb_Hdg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.tb_Hdg.Location = new System.Drawing.Point(189, 212);
+            this.tb_Hdg.Name = "tb_Hdg";
+            this.tb_Hdg.Size = new System.Drawing.Size(47, 22);
+            this.tb_Hdg.TabIndex = 5;
+            // 
+            // tb_TrkDir
+            // 
+            this.tb_TrkDir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.tb_TrkDir.Location = new System.Drawing.Point(157, 242);
+            this.tb_TrkDir.Name = "tb_TrkDir";
+            this.tb_TrkDir.Size = new System.Drawing.Size(79, 22);
+            this.tb_TrkDir.TabIndex = 5;
+            // 
+            // tb_RearDist
+            // 
+            this.tb_RearDist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.tb_RearDist.Location = new System.Drawing.Point(189, 182);
+            this.tb_RearDist.Name = "tb_RearDist";
+            this.tb_RearDist.Size = new System.Drawing.Size(47, 22);
+            this.tb_RearDist.TabIndex = 5;
             // 
             // frm_Main
             // 
@@ -394,14 +438,18 @@
         private System.Windows.Forms.TextBox tb_Sec;
         private System.Windows.Forms.TextBox tb_Rdist;
         private System.Windows.Forms.TextBox tb_Ldist;
-        private System.Windows.Forms.TextBox tb_Hdg;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox tb_TrkDir;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox tb_AnomalyCode;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox tb_WrongSideCnt;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.TextBox tb_TrkDir;
+        private System.Windows.Forms.TextBox tb_Hdg;
+        private System.Windows.Forms.TextBox tb_Fdist;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox tb_RearDist;
     }
 }
 
