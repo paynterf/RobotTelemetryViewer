@@ -17,15 +17,32 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolBar;
 using System.Windows.Input;
 
+//05/15/23 Variable_Header branch
+//Adaptively assign telemetry header strings to textbox labels, and
+//data items to the corresponding text boxes
+//Header string is assumed to start with "Sec\tLCen\RCen"
+
 namespace RobotTelemetryViewer
 {
     public partial class frm_Main : Form
     {
         List<Frame> frames = new List<Frame>();
+        List<string> telemetrystrings = new List<string>();
+
+        public static int NUM_FIXED_TELEMETRY_COLUMNS = 4;
 
         //05/04/23 chg to public static so can access from frame.cs
         public static bool verbose = false;
         public static bool more_verbose = false;
+
+        private string[] columnHeaders;
+
+        public string[] ColumnHeaderStrings
+        {
+            get { return columnHeaders; }
+            set { columnHeaders = value; }
+        }
+
 
         bool first_time_pBox_draw = true;//force pBox resize one-time to init scrollbar
         float ZoomFactor = 1;//04/09/23 added to allow zoom in/out using CTRL mousewheel
@@ -39,6 +56,7 @@ namespace RobotTelemetryViewer
         {
             InitializeComponent();
             LoadTelemetry();
+            //this.Show();
         }
         private void LoadTelemetry()
         {
@@ -48,7 +66,8 @@ namespace RobotTelemetryViewer
             {
                 tBar_FrameSelect.Maximum = numFrames - 1;//4/11/23 so can select any frame in frames
                 tBar_FrameSelect.Minimum = 0;
-                LoadFrameDataIntoTrkbarReadout(0);
+                LoadColumnHeadersIntoTextBoxLabels();
+                LoadFrameDataIntoReadouts(0);
                 pictureBox1.Invalidate();
             }
             else
@@ -59,7 +78,6 @@ namespace RobotTelemetryViewer
                 Application.Exit();
 
             }
-
         }
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
@@ -104,7 +122,14 @@ namespace RobotTelemetryViewer
                 frames[idx].draw(20 * frames[idx].Sec, g, idx == tBar_FrameSelect.Value );//time x20 used as proxy for dist in mm
             }
 
-            y_extent_mm = 20*frames[frames.Count-1].Sec;//Sec used as proxy for mm
+            //y_extent_mm = 20*frames[frames.Count-1].Sec;//Sec used as proxy for mm
+            //y_extent_mm = 20*(frames[frames.Count-1].Sec+1);//5/19/23 added 1 sec to make sure can see all
+            //y_extent_mm = 20*(frames[frames.Count-1].Sec) + 10;//5/19/23 added 1 sec to make sure can see all
+            //y_extent_mm = 20*(frames[frames.Count-1].Sec) + 5;//5/19/23 added 1 sec to make sure can see all
+
+            //05/19/23 rev to fully contain vert extent of COM6 2023-05-18 19-40-02.inbound.txt (+1 - +8 doesn't work) 
+            y_extent_mm = 20*(frames[frames.Count-1].Sec) + 9;//5/19/23 added 1 sec to make sure can see all
+            //y_extent_mm = 20*(frames[frames.Count-1].Sec) + 8;//5/19/23 added 1 sec to make sure can see all
         
             if (more_verbose)
             {
@@ -118,9 +143,9 @@ namespace RobotTelemetryViewer
                 pictureBox1_Resize(null, null);//force a resize event
             }
         }
-        //private bool GetFrameDataFromRobotTelemetryFile()
         private int GetFrameDataFromRobotTelemetryFile()//4/11/23 rev to return number of frames loaded
         {
+            //05/15/23 Experiment with using variable header info to populate frame objects
             bool result = false;
             string CurTrackDir = "";
 
@@ -137,47 +162,82 @@ namespace RobotTelemetryViewer
                     string ln;
 
                     //04/10/23 rewritten to consume entire telemetry file, skipping non-telemetry lines 
+                    //05/16/23 note that there can be multiple header lines as well
                     while ((ln = file.ReadLine()) != null)
                     {
                         if (verbose)
                         {
                             Debug.WriteLine(ln);
-                            counter++;
                         }
+                        counter++;
 
-                        try
+                        //05/15/23 check for header line
+                        if (ln.Contains("Sec") && ln.Contains("LCen") && ln.Contains("RCen"))
                         {
-                            Frame frame = new Frame(ln, CurTrackDir);
-                            frames.Add(frame);
+                            //OK, we have found a header line. If the first, capture it
+                            columnHeaders = ln.Split(new char[] { '\t' });
 
-                            if (more_verbose)
+                            if (verbose)
                             {
-                                frame.print();
+                                foreach (string hdrstring in columnHeaders)
+                                {
+                                    Debug.WriteLine(hdrstring);
+                                }
                             }
-
                         }
-                        catch (Exception e)
+                        //check for line containing 'TrackLeftWallOffset:' or 'TrackRightWallOffset:'
+                        else if (ln.Contains("TrackLeftWallOffset:"))
                         {
-                            if(more_verbose)
+                            //tracking left side. 
+                            CurTrackDir = "TRK_LEFT";
+                        }
+                        else if (ln.Contains("TrackRightWallOffset:"))
+                        {
+                            //tracking left side. 
+                            CurTrackDir = "TRK_RIGHT";
+                        }
+                        else //data line or miscellaneous output 
+                        {
+                            //Frame ctor will raise an exception on a non-telemetry line
+                            try
                             {
-                                Debug.WriteLine($"failed to add frame to list, message = {e.Message}");
-                            }
+                                Frame frame = new Frame(ln, CurTrackDir);
+                                frames.Add(frame);
 
-                            //check for line containing 'TrackLeftWallOffset:' or 'TrackRightWallOffset:'
-                            if (ln.Contains("TrackLeftWallOffset:")) 
-                            {
-                                //tracking left side. 
-                                CurTrackDir = "TRK_LEFT";
+                                if (verbose)
+                                {
+                                    Debug.WriteLine($"frames now contains {frames.Count} frames");
+                                }
+
+                                if (more_verbose)
+                                {
+                                    frame.print();
+                                }
+
                             }
-                            if (ln.Contains("TrackRightWallOffset:")) 
+                            catch (Exception e)
                             {
-                                //tracking left side. 
-                                CurTrackDir = "TRK_RIGHT";
+                                if(more_verbose)
+                                {
+                                    Debug.WriteLine($"failed to add frame to list, message = {e.Message}");
+                                }
+
+                                ////check for line containing 'TrackLeftWallOffset:' or 'TrackRightWallOffset:'
+                                //if (ln.Contains("TrackLeftWallOffset:")) 
+                                //{
+                                //    //tracking left side. 
+                                //    CurTrackDir = "TRK_LEFT";
+                                //}
+                                //if (ln.Contains("TrackRightWallOffset:")) 
+                                //{
+                                //    //tracking left side. 
+                                //    CurTrackDir = "TRK_RIGHT";
+                                //}
                             }
                         }
                     }
 
-                    if (verbose)
+                    //if (verbose)
                     {
                         System.Diagnostics.Debug.WriteLine($"File has {counter} lines. Added {frames.Count} Frames");
                     }
@@ -223,7 +283,7 @@ namespace RobotTelemetryViewer
                 vScrollBar1.Visible = false;
             }
 
-            //if (more_verbose)
+            if (more_verbose)
             {
                 Debug.WriteLine($"x, y extents (pix) = ({data_extent_pt_pix[0].X}, {data_extent_pt_pix[0].X})");
             }
@@ -239,7 +299,6 @@ namespace RobotTelemetryViewer
         {
             pictureBox1.MouseWheel += new MouseEventHandler(pictureBox1_MouseWheel);
         }
-
         //private void pictureBox1_MouseWheel(object sender, EventArgs e)
         private void pictureBox1_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -264,28 +323,96 @@ namespace RobotTelemetryViewer
             }
 
         }
-
         private void tBar_FrameSelect_ValueChanged(object sender, EventArgs e)
         {
-            LoadFrameDataIntoTrkbarReadout(tBar_FrameSelect.Value);
+            LoadFrameDataIntoReadouts(tBar_FrameSelect.Value);
 
             pictureBox1.Invalidate();
         }
-
-        private void LoadFrameDataIntoTrkbarReadout(int idx)
+        private void LoadFrameDataIntoReadouts(int idx)
         {
-
             tb_Idx.Text = idx.ToString();
             Frame frame = frames[idx];
             tb_Sec.Text = frame.Sec.ToString();
             tb_Ldist.Text = frame.Ldist.ToString();
             tb_Rdist.Text = frame.Rdist.ToString();
-            tb_Hdg.Text = frame.Hdgdeg.ToString();
-            tb_RearDist.Text = frame.Rearpos.ToString();
-            tb_Fdist.Text = frame.Fwdpos.ToString();
-            tb_TrkDir.Text = frame.TrackDir.ToString();
-            tb_WrongSideCnt.Text = frame.WrongWallCount.ToString();
-            tb_AnomalyCode.Text = frame.AnomalyCode;
+            tb_Hdgdeg.Text = frame.Hdgdeg.ToString();
+
+            //OK, now iteratively update the variable data columns
+            for (int i = 1;i<= frame.double_vals.Count;i++)
+            {
+                foreach (Control ctrl in DataPanel.Controls)
+                {
+                    //string searchstr = "tb_Data_" + i.ToString();
+                    if (ctrl.Name.Contains("tb_Data_" + i.ToString()))
+                    {
+                        ((System.Windows.Forms.TextBox)ctrl).Text = frame.double_vals[i].ToString();
+                    }
+                }
+            }
+            for (int i = 1;i<= frame.string_vals.Count;i++)
+            {
+                foreach (Control ctrl in DataPanel.Controls)
+                {
+                    if (ctrl.Name.Contains("tb_String_" + i.ToString()))
+                    {
+                        ((System.Windows.Forms.TextBox)ctrl).Text = frame.string_vals[i];
+                    }
+                }
+            }
+        }
+
+        private void LoadColumnHeadersIntoTextBoxLabels()
+        {
+            //Purpose: update the variable textbox labels with column header strings
+            //Inputs: columnHeaders = string[] containing column header strings
+            //Outputs: text box labels updated to reflect column headers
+            //Plan:
+            //Step1: Get first frame for use as a data type template
+            //Step2: for each numeric frame entry, assign the associated column header string
+            //       to the appropriate data textbox label.
+            //Step3: for each string frame entry, assign the associated column header string
+            //       to the appropriate string textbox label.
+
+        //Step1: Get first frame for use as a data type template
+            Frame firstframe = frames[0];
+
+
+        //Step2: for each numeric frame entry, assign the associated column header string
+        //       to the appropriate data textbox label.
+            for (int i = 1; i <= firstframe.double_vals.Count; i++)
+            {
+                string srch_str = "lbl_Data_" + i.ToString();
+
+                //Debug.WriteLine($"DataPanel contains {DataPanel.Controls.Count} controls");
+                foreach (Control ctrl in DataPanel.Controls)
+                {
+                    //Debug.WriteLine($"{ctrl.Name} has Name {ctrl.Name}");
+                    if (ctrl.Name == srch_str)
+                    {
+                        ctrl.Text = columnHeaders[i + NUM_FIXED_TELEMETRY_COLUMNS - 1];
+                        break;
+                    }
+                }
+            }
+
+        //Step3: for each string frame entry, assign the associated column header string
+        //       to the appropriate string textbox label.
+            for (int i = 1; i <= firstframe.string_vals.Count;i++)
+            {
+                string srch_str = "lbl_String_" + i.ToString();
+
+                //Debug.WriteLine($"DataPanel contains {DataPanel.Controls.Count} controls");
+                foreach (Control ctrl in DataPanel.Controls)
+                {
+                    //Debug.WriteLine($"{ctrl.Name} has Name {ctrl.Name}");
+                    if (ctrl.Name == srch_str)
+                    {
+                        ctrl.Text = columnHeaders[i + NUM_FIXED_TELEMETRY_COLUMNS + firstframe.double_vals.Count - 1];
+                        break;
+                    }
+                }
+            }
         }
     }
 }

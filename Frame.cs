@@ -8,13 +8,15 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static RobotTelemetryViewer.Frame;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace RobotTelemetryViewer
 {
-
     public class Frame
     {
+        //05/15/23 experiment with variable numbers of controls on main form
+
         //float sec, ldist, rdist, fwdpos, rearpos, hdgdeg;
 
         public enum TRKDIR
@@ -24,42 +26,32 @@ namespace RobotTelemetryViewer
             TRK_RIGHT
         }
 
-        private TRKDIR trkdir;
+        //private TRKDIR trkdir;
         private float sec;
         private float ldist;
         private float rdist;
-        private float fwdpos;
-        private float rearpos;
         private float hdgdeg;
-        private string anomalyCode;
-        private int wrongWallCount;
+        private string trkstr;
 
-        public int WrongWallCount
+        public string TrackString
         {
-            get { return wrongWallCount; }
-            set { wrongWallCount = value; }
+            get { return trkstr; }
+            set { trkstr = value; }
         }
 
-        public TRKDIR TrackDir
-        {
-            get { return trkdir; }
-            set { trkdir = value; }
-        }
+
         public float Hdgdeg
         {
             get { return hdgdeg; }
             set { hdgdeg = value; }
         }
-        public float Rearpos
-        {
-            get { return rearpos; }
-            set { rearpos = value; }
-        }
-        public float Fwdpos
-        {
-            get { return fwdpos; }
-            set { fwdpos = value; }
-        }
+
+
+        //public List<double> double_vals;
+        //public List<string> string_vals;
+        public Dictionary<int, double> double_vals = new Dictionary<int, double>();
+        public Dictionary<int, string> string_vals = new Dictionary<int, string>();
+
         public float Rdist
         {
             get { return rdist; }
@@ -75,15 +67,7 @@ namespace RobotTelemetryViewer
             get { return sec; }
             set { sec = value; }
         }
-        public string AnomalyCode
-        {
-            get { return anomalyCode; }
-            set { anomalyCode = value; }
-        }
 
-        public string[] AnomalyCodeStrArray = new string[] { "\"NONE\", \"STUCK_AHEAD\", \"STUCK_BEHIND\", " +
-            "\"OBSTACLE_AHEAD\", \"WALL_OFFSET_DIST_AHEAD\",\"OBSTACLE_BEHIND\", \"OPEN_CORNER\", " +
-            "\"DEAD_BATTERY\", \"CHARGER_CONNECTED\", \"OPEN_DOORWAY\", \"WRONG_WALL\"" };
 
         //geometry in mm
         //public static int MAX_LR_DIST = 200;
@@ -94,66 +78,63 @@ namespace RobotTelemetryViewer
         static float last_good_ldist = 0;
         static float last_good_rdist = 0;
 
-
-
-        public Frame(float s, float l, float r, float f, float rear, float h, TRKDIR dir, string anomalycode)
-        {
-            sec = s;
-            ldist = l;
-            rdist = r;
-            fwdpos = f;
-            rearpos = rear;
-            hdgdeg = h;
-            trkdir = dir;
-        }
-
-        //04/09/23 added TRKDIR property to frame as last item in line
         public Frame(string line, string curTrackStr)
         {
             try
             {
                 string[] pieces = line.Split('\t');
 
+                //05/15/23 these first three are 'fixed' - always the first 5 items in telemetry
                 sec = Convert.ToSingle(pieces[0]);
                 ldist = Convert.ToSingle(pieces[1]);
                 rdist = Convert.ToSingle(pieces[2]);
-                fwdpos = Convert.ToSingle(pieces[3]);
-                rearpos = Convert.ToSingle(pieces[4]);
-                hdgdeg = Convert.ToSingle(pieces[7]);
-                wrongWallCount = Convert.ToInt16(pieces[8]);
-                anomalyCode = pieces[9];
+                hdgdeg = Convert.ToSingle(pieces[3]);
+                trkstr = curTrackStr;
 
-                //track direction takes more work
-                if (curTrackStr == "TRK_LEFT")
+                //05/15/23 all the rest are either numerical 'Data_x', or
+                //strings 'String_x'
+                int dta = 1; //variable data value index
+                int str = 1; //variable string value index
+                for (int i = frm_Main.NUM_FIXED_TELEMETRY_COLUMNS; i < pieces.Length; i++)
                 {
-                    trkdir = TRKDIR.TRK_LEFT;
-                }
-                else if (curTrackStr == "TRK_RIGHT")
-                {
-                    trkdir = TRKDIR.TRK_RIGHT;
-                }
-                else
-                {
-                    if (frm_Main.more_verbose)
+                    string s = pieces[i];
+
+                    if (double.TryParse(s, out double dbl_val)) 
                     {
-                        Debug.WriteLine($"pieces[8] ({pieces[8]} was not recognized as a TRKDIR enum option");
+                        double_vals.Add(dta++, dbl_val);
                     }
-                    trkdir = TRKDIR.TRK_NONE;
+                    else 
+                    {
+                        string_vals.Add(str++, s); 
+                    }
+
+                }
+
+                if (frm_Main.verbose)
+                {
+                    for (int i = 1; i <= double_vals.Count; i++)
+                    {
+                        Debug.WriteLine($"double_val[{i}] = {double_vals[i]}");
+                    }
+                    for (int i = 1; i <= string_vals.Count; i++)
+                    {
+                        Debug.WriteLine($"string_val[{i}] = {string_vals[i]}");
+                    }
                 }
             }
             catch (Exception e)
             {
-                if (frm_Main.more_verbose)
-                {
-                    Debug.WriteLine($"Failed to construct Frame object with error {e.Message}");
-                    Debug.WriteLine($"offending line was {line}");
-                }
+                //if (frm_Main.more_verbose)
+                //{
+                //    Debug.WriteLine($"Failed to construct Frame object with error {e.Message}");
+                //    Debug.WriteLine($"offending line was {line}");
+                //}
                 throw new ArgumentOutOfRangeException();
             }
         }
         public void print()
         {
-            Debug.Print($"{sec}\t{ldist}\t{rdist}\t{fwdpos}\t{rearpos}\t{hdgdeg}");
+            Debug.Print($"{sec}\t{ldist}\t{rdist}\t{hdgdeg}");
         }
 
         //void draw(float yloc)
@@ -166,21 +147,36 @@ namespace RobotTelemetryViewer
             Pen LeftPen = new Pen(Color.Yellow);
             Pen RightPen = new Pen(Color.Green);
             Pen TooFarPen = new Pen(Color.Gray);
+            Arrow myArrow = new Arrow();
 
-            switch (trkdir)
+            switch (trkstr)
             {
-                case TRKDIR.TRK_NONE:
-                    RobotPen.Color = Color.Gray;
-                    break;
-                case TRKDIR.TRK_LEFT:
+                case "LEFT":
                     RobotPen.Color = Color.Blue;
                     break;
-                case TRKDIR.TRK_RIGHT:
+                case "RIGHT":
                     RobotPen.Color = Color.Green;
                     break;
                 default:
+                    RobotPen.Color = Color.Gray;
                     break;
             }
+
+
+            //switch (trkdir)
+            //{
+            //    case TRKDIR.TRK_NONE:
+            //        RobotPen.Color = Color.Gray;
+            //        break;
+            //    case TRKDIR.TRK_LEFT:
+            //        RobotPen.Color = Color.Blue;
+            //        break;
+            //    case TRKDIR.TRK_RIGHT:
+            //        RobotPen.Color = Color.Green;
+            //        break;
+            //    default:
+            //        break;
+            //}
 
             //04/11/23 try at highlighting a selected frame
             if (bIsSelected)
@@ -217,7 +213,8 @@ namespace RobotTelemetryViewer
                 //draw rectangle rotated by hdgdeg deg
                 g.TranslateTransform(ldist, 0);
                 g.RotateTransform(-hdgdeg);
-                g.DrawRectangle(RobotPen, 0, 0, 20, 10);
+                //g.DrawRectangle(RobotPen, 0, 0, 20, 10);
+                myArrow.Draw(RobotPen, yloc, g);
 
                 last_good_ldist = ldist;
 
@@ -244,14 +241,4 @@ namespace RobotTelemetryViewer
 
         }
     }
-
-    //void drawArrow(int cx, int cy, int len, float angle){
-    //  pushMatrix();
-    //  translate(cx, cy);
-    //  rotate(radians(angle));
-    //  line(0,0,len, 0);
-    //  line(len, 0, len - 8, -8);
-    //  line(len, 0, len - 8, 8);
-    //  popMatrix();
-    //}
 }
