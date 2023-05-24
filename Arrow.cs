@@ -41,11 +41,8 @@ namespace RobotTelemetryViewer
         //    set { trkdir = value; }
         //}
 
-        //private const int Default_Head_Length_MM = 5;
         private const int Default_Head_Length_MM = 3;
-		//private const int Default_Stem_Length_MM = 15;
 		private const int Default_Stem_Length_MM = 5;
-		//private const int Default_Head_Angle_Deg = 45;
 		private const int Default_Head_Angle_Deg = 30;
 
 		public Arrow(int stemlengthMM = Default_Stem_Length_MM, 

@@ -71,7 +71,8 @@ namespace RobotTelemetryViewer
 
         //geometry in mm
         //public static int MAX_LR_DIST = 200;
-        public static int MAX_LR_DIST = 400;//05/02/23
+        //public static int MAX_LR_DIST = 400;//05/02/23
+        public static int MAX_LR_DIST = 100;//05/23/23
         public static int ROBOT_WIDTH = 20;
         public static int ROBOT_HEIGHT = 15;
 
@@ -142,87 +143,107 @@ namespace RobotTelemetryViewer
         public void draw(float yloc, Graphics g, bool bIsSelected)
         {
             //04/09/23 robot colored red for TRK_LEFT, green for TRK_RIGHT, black for TRK_NEITHER
-            Pen RobotPen = new Pen(Color.Gray);
+            Pen ArrowPen = new Pen(Color.Gray);
             Pen SelectPen = new Pen(Color.Red);
             Pen LeftPen = new Pen(Color.Yellow);
             Pen RightPen = new Pen(Color.Green);
             Pen TooFarPen = new Pen(Color.Gray);
+
+            if ( bIsSelected )
+            {
+                ArrowPen.Color = Color.Red;
+                LeftPen.Color = Color.Red;
+                RightPen.Color = Color.Red;
+                TooFarPen.Color = Color.Red;
+            }
+
             Arrow myArrow = new Arrow();
+            float Arrow_Xpos = 0;
+
+            GraphicsState transState = g.Save();
+            g.TranslateTransform(0, (int)yloc);//move drawing location up to latest point
 
             switch (trkstr)
             {
-                case "LEFT":
-                    RobotPen.Color = Color.Blue;
+                case "TRK_LEFT":
+                    ArrowPen.Color = Color.Blue;
+
+                    //04/11/23 try at highlighting a selected frame
+                    if (bIsSelected)
+                    {
+                        ArrowPen.Color = Color.Red;
+                    }
+
+                    Arrow_Xpos = ldist;
+
+                    if (ldist < MAX_LR_DIST)
+                    {
+                        g.DrawRectangle(LeftPen, 0, 0, 1, 3);//wall symbol; used to be an ellipse
+
+                        if (bIsSelected)
+                        {
+                            g.DrawRectangle(SelectPen, 0, 0, 1, 3);//wall symbol; used to be an ellipse
+                        }
+
+                        //right-hand border takes more work
+                        if (rdist < MAX_LR_DIST)
+                        {
+                            g.DrawEllipse(RightPen, ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
+
+                            //if (bIsSelected)
+                            //{
+                            //    g.DrawEllipse(SelectPen, ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
+                            //}
+                        }
+                        else
+                        {
+                            g.DrawEllipse(TooFarPen, ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
+                        }
+
+                        //draw rectangle rotated by hdgdeg deg
+                        //g.TranslateTransform(ldist, 0);
+                        g.TranslateTransform(Arrow_Xpos, 0);
+                        g.RotateTransform(-hdgdeg);
+                        //g.DrawRectangle(ArrowPen, 0, 0, 20, 10);
+                        myArrow.Draw(ArrowPen, yloc, g);
+
+                        last_good_ldist = ldist;
+
+                    }
+
                     break;
-                case "RIGHT":
-                    RobotPen.Color = Color.Green;
-                    break;
-                default:
-                    RobotPen.Color = Color.Gray;
-                    break;
-            }
-
-
-            //switch (trkdir)
-            //{
-            //    case TRKDIR.TRK_NONE:
-            //        RobotPen.Color = Color.Gray;
-            //        break;
-            //    case TRKDIR.TRK_LEFT:
-            //        RobotPen.Color = Color.Blue;
-            //        break;
-            //    case TRKDIR.TRK_RIGHT:
-            //        RobotPen.Color = Color.Green;
-            //        break;
-            //    default:
-            //        break;
-            //}
-
-            //04/11/23 try at highlighting a selected frame
-            if (bIsSelected)
-            {
-                RobotPen = SelectPen;
-            }
-
-            GraphicsState transState = g.Save();
-            g.TranslateTransform(0, (int)yloc);//04/08/23 moved the '20*' from here to frm_main so more obvious
-
-            if (ldist < MAX_LR_DIST)
-            {
-                g.DrawRectangle(LeftPen, 0, 0, 1, 3);//wall symbol; used to be an ellipse
-                if (bIsSelected)
-                {
-                    g.DrawRectangle(SelectPen, 0, 0, 1, 3);//wall symbol; used to be an ellipse
-                }
-
-                //right-hand border takes more work
-                if (rdist < MAX_LR_DIST)
-                {
-                    g.DrawEllipse(RightPen, ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
+                case "TRK_RIGHT":
+                    ArrowPen.Color = Color.Green;
 
                     if (bIsSelected)
                     {
-                        g.DrawEllipse(SelectPen, ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
+                        ArrowPen.Color = Color.Red;
                     }
-                }
-                else
-                {
-                    g.DrawEllipse(TooFarPen, ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
-                }
+                    Arrow_Xpos = 10;
 
-                //draw rectangle rotated by hdgdeg deg
-                g.TranslateTransform(ldist, 0);
-                g.RotateTransform(-hdgdeg);
-                //g.DrawRectangle(RobotPen, 0, 0, 20, 10);
-                myArrow.Draw(RobotPen, yloc, g);
+                    //if (rdist < MAX_LR_DIST)
+                    {
+                        //if (bIsSelected)
+                        //{
+                        //    g.DrawEllipse(SelectPen, rdist, 0, 3, 3);
+                        //    g.DrawRectangle(SelectPen, 0, 0, 1, 3);
+                        //}
+                        //else
+                        {
+                            g.DrawEllipse(RightPen, rdist, 0, 3, 3);
+                            g.DrawRectangle(RightPen, 0, 0, 1, 3);
+                        }
+                    }
 
-                last_good_ldist = ldist;
+                    //draw rectangle rotated by hdgdeg deg
+                    g.TranslateTransform(Arrow_Xpos, 0);
+                    g.RotateTransform(-hdgdeg);
+                    myArrow.Draw(ArrowPen, yloc, g);
 
-            }
-            else if (ldist >= MAX_LR_DIST && rdist < MAX_LR_DIST)
-            {
-                g.DrawEllipse(RightPen, last_good_ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
-                g.DrawRectangle(TooFarPen, 0, 0, 1, 3);
+                    break;
+                default:
+                    ArrowPen.Color = Color.Gray;
+                    break;
             }
 
             g.Restore(transState);
