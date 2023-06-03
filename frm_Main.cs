@@ -122,14 +122,8 @@ namespace RobotTelemetryViewer
                 frames[idx].draw(20 * frames[idx].Sec, g, idx == tBar_FrameSelect.Value );//time x20 used as proxy for dist in mm
             }
 
-            //y_extent_mm = 20*frames[frames.Count-1].Sec;//Sec used as proxy for mm
-            //y_extent_mm = 20*(frames[frames.Count-1].Sec+1);//5/19/23 added 1 sec to make sure can see all
-            //y_extent_mm = 20*(frames[frames.Count-1].Sec) + 10;//5/19/23 added 1 sec to make sure can see all
-            //y_extent_mm = 20*(frames[frames.Count-1].Sec) + 5;//5/19/23 added 1 sec to make sure can see all
-
             //05/19/23 rev to fully contain vert extent of COM6 2023-05-18 19-40-02.inbound.txt (+1 - +8 doesn't work) 
             y_extent_mm = 20*(frames[frames.Count-1].Sec) + 9;//5/19/23 added 1 sec to make sure can see all
-            //y_extent_mm = 20*(frames[frames.Count-1].Sec) + 8;//5/19/23 added 1 sec to make sure can see all
         
             if (more_verbose)
             {
@@ -255,17 +249,18 @@ namespace RobotTelemetryViewer
         }
         private void pictureBox1_Resize(object sender, EventArgs e)
         {
+            //06/02/23 this looks duplicative with code in .Paint() but it has to be done to set the scrollbar size
             //now adjust vert scrollbar
-            Graphics g = pictureBox1.CreateGraphics();
+            Graphics g2 = pictureBox1.CreateGraphics();
             Point[] pBoxExtents_mm = { new Point(pictureBox1.Width, pictureBox1.Height) };
 
             //change to mm units with y growng up, origin at bottom
-            g.PageUnit = GraphicsUnit.Millimeter;
-            g.TransformPoints(CoordinateSpace.Page, CoordinateSpace.Device, pBoxExtents_mm);
+            g2.PageUnit = GraphicsUnit.Millimeter;
+            g2.TransformPoints(CoordinateSpace.Page, CoordinateSpace.Device, pBoxExtents_mm);
 
 
             PointF[] data_extent_pt_pix = new PointF[] { new PointF(x_extent_mm, y_extent_mm) };
-            g.TransformPoints(CoordinateSpace.Device, CoordinateSpace.Page, data_extent_pt_pix);
+            g2.TransformPoints(CoordinateSpace.Device, CoordinateSpace.Page, data_extent_pt_pix);
 
             //04/08/23 these values were empirically derived, but seem to work fine
             //need the 1.1* in the 'if' statement to make sure the scrollbar doesn't disappear too soon

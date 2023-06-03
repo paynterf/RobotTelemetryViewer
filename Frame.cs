@@ -3,21 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static RobotTelemetryViewer.Frame;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 
 namespace RobotTelemetryViewer
 {
     public class Frame
     {
         //05/15/23 experiment with variable numbers of controls on main form
-
-        //float sec, ldist, rdist, fwdpos, rearpos, hdgdeg;
 
         public enum TRKDIR
         {
@@ -46,9 +38,6 @@ namespace RobotTelemetryViewer
             set { hdgdeg = value; }
         }
 
-
-        //public List<double> double_vals;
-        //public List<string> string_vals;
         public Dictionary<int, double> double_vals = new Dictionary<int, double>();
         public Dictionary<int, string> string_vals = new Dictionary<int, string>();
 
@@ -93,7 +82,6 @@ namespace RobotTelemetryViewer
                 trkstr = curTrackStr;
 
                 //05/15/23 all the rest are either numerical 'Data_x', or
-                //strings 'String_x'
                 int dta = 1; //variable data value index
                 int str = 1; //variable string value index
                 for (int i = frm_Main.NUM_FIXED_TELEMETRY_COLUMNS; i < pieces.Length; i++)
@@ -125,11 +113,6 @@ namespace RobotTelemetryViewer
             }
             catch (Exception e)
             {
-                //if (frm_Main.more_verbose)
-                //{
-                //    Debug.WriteLine($"Failed to construct Frame object with error {e.Message}");
-                //    Debug.WriteLine($"offending line was {line}");
-                //}
                 throw new ArgumentOutOfRangeException();
             }
         }
@@ -138,23 +121,26 @@ namespace RobotTelemetryViewer
             Debug.Print($"{sec}\t{ldist}\t{rdist}\t{hdgdeg}");
         }
 
-        //void draw(float yloc)
-        //public void draw(float yloc, Graphics g)
         public void draw(float yloc, Graphics g, bool bIsSelected)
         {
             //04/09/23 robot colored red for TRK_LEFT, green for TRK_RIGHT, black for TRK_NEITHER
             Pen ArrowPen = new Pen(Color.Gray);
             Pen SelectPen = new Pen(Color.Red);
-            Pen LeftPen = new Pen(Color.Yellow);
+            Pen LeftPen = new Pen(Color.Blue);
+            LeftPen.Width = 0.5F;
             Pen RightPen = new Pen(Color.Green);
+            RightPen.Width = LeftPen.Width;
             Pen TooFarPen = new Pen(Color.Gray);
+            TooFarPen.Width = LeftPen.Width;
+            SelectPen.Width = 2*LeftPen.Width;
 
             if ( bIsSelected )
             {
-                ArrowPen.Color = Color.Red;
-                LeftPen.Color = Color.Red;
-                RightPen.Color = Color.Red;
-                TooFarPen.Color = Color.Red;
+                ArrowPen = SelectPen;
+                LeftPen = SelectPen;
+                RightPen = SelectPen;
+                TooFarPen=SelectPen;
+
             }
 
             Arrow myArrow = new Arrow();
@@ -166,34 +152,17 @@ namespace RobotTelemetryViewer
             switch (trkstr)
             {
                 case "TRK_LEFT":
-                    ArrowPen.Color = Color.Blue;
-
-                    //04/11/23 try at highlighting a selected frame
-                    if (bIsSelected)
-                    {
-                        ArrowPen.Color = Color.Red;
-                    }
-
+                    ArrowPen = LeftPen;
                     Arrow_Xpos = ldist;
 
                     if (ldist < MAX_LR_DIST)
                     {
                         g.DrawRectangle(LeftPen, 0, 0, 1, 3);//wall symbol; used to be an ellipse
 
-                        if (bIsSelected)
-                        {
-                            g.DrawRectangle(SelectPen, 0, 0, 1, 3);//wall symbol; used to be an ellipse
-                        }
-
                         //right-hand border takes more work
                         if (rdist < MAX_LR_DIST)
                         {
                             g.DrawEllipse(RightPen, ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
-
-                            //if (bIsSelected)
-                            //{
-                            //    g.DrawEllipse(SelectPen, ldist + ROBOT_WIDTH + rdist, 0, 3, 3);
-                            //}
                         }
                         else
                         {
@@ -201,10 +170,8 @@ namespace RobotTelemetryViewer
                         }
 
                         //draw rectangle rotated by hdgdeg deg
-                        //g.TranslateTransform(ldist, 0);
                         g.TranslateTransform(Arrow_Xpos, 0);
                         g.RotateTransform(-hdgdeg);
-                        //g.DrawRectangle(ArrowPen, 0, 0, 20, 10);
                         myArrow.Draw(ArrowPen, yloc, g);
 
                         last_good_ldist = ldist;
@@ -213,27 +180,11 @@ namespace RobotTelemetryViewer
 
                     break;
                 case "TRK_RIGHT":
-                    ArrowPen.Color = Color.Green;
+                    ArrowPen = RightPen;
 
-                    if (bIsSelected)
-                    {
-                        ArrowPen.Color = Color.Red;
-                    }
                     Arrow_Xpos = 10;
-
-                    //if (rdist < MAX_LR_DIST)
-                    {
-                        //if (bIsSelected)
-                        //{
-                        //    g.DrawEllipse(SelectPen, rdist, 0, 3, 3);
-                        //    g.DrawRectangle(SelectPen, 0, 0, 1, 3);
-                        //}
-                        //else
-                        {
-                            g.DrawEllipse(RightPen, rdist, 0, 3, 3);
-                            g.DrawRectangle(RightPen, 0, 0, 1, 3);
-                        }
-                    }
+                    g.DrawEllipse(RightPen, rdist, 0, 3, 3);
+                    g.DrawRectangle(RightPen, 0, 0, 1, 3);
 
                     //draw rectangle rotated by hdgdeg deg
                     g.TranslateTransform(Arrow_Xpos, 0);
@@ -257,9 +208,6 @@ namespace RobotTelemetryViewer
             float sec = yloc / 20;
             g.DrawString(sec.ToString(), new Font("Arial", 8), brush, new PointF(0, 0));
             g.Restore(txt_transState);
-
-            //g.Restore(transState);
-
         }
     }
 }
