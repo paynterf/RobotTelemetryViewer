@@ -594,7 +594,7 @@
             this.Controls.Add(this.gBox1);
             this.Controls.Add(this.panel1);
             this.Name = "frm_Main";
-            this.Text = "Robot Telemetry Viewer";
+            this.Text = "Robot Telemetry Viewer V1.0.2";
             this.Load += new System.EventHandler(this.frm_Main_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);

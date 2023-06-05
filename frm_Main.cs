@@ -76,7 +76,6 @@ namespace RobotTelemetryViewer
                 MessageBox.Show("No Frames Found - Quitting", "No Frames Found!",MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
                 Application.Exit();
-
             }
         }
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
@@ -189,6 +188,14 @@ namespace RobotTelemetryViewer
                         {
                             //tracking left side. 
                             CurTrackDir = "TRK_RIGHT";
+                        }
+
+                        //06/05/23 added to alert user and quit program
+                        else if (ln.Contains("DISTANCES ONLY MODE"))
+                        {
+                            MessageBox.Show("Distances Only Mode File - Quitting!\n" + ofd.FileName, this.Text + ": Bad File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            this.Close();
+                            Application.Exit();
                         }
                         else //data line or miscellaneous output 
                         {
