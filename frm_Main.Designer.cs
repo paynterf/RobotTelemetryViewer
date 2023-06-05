@@ -79,6 +79,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.DataPanel = new System.Windows.Forms.GroupBox();
+            this.btn_OpenInNotepad = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             this.gBox1.SuspendLayout();
@@ -95,7 +96,7 @@
             this.pictureBox1.BackColor = System.Drawing.SystemColors.Window;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(843, 853);
+            this.pictureBox1.Size = new System.Drawing.Size(843, 919);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
@@ -106,7 +107,7 @@
             this.vScrollBar1.Dock = System.Windows.Forms.DockStyle.Right;
             this.vScrollBar1.Location = new System.Drawing.Point(846, 0);
             this.vScrollBar1.Name = "vScrollBar1";
-            this.vScrollBar1.Size = new System.Drawing.Size(24, 853);
+            this.vScrollBar1.Size = new System.Drawing.Size(24, 919);
             this.vScrollBar1.TabIndex = 1;
             this.vScrollBar1.ValueChanged += new System.EventHandler(this.vScrollBar1_ValueChanged);
             // 
@@ -121,7 +122,7 @@
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Location = new System.Drawing.Point(1, 1);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(870, 853);
+            this.panel1.Size = new System.Drawing.Size(870, 919);
             this.panel1.TabIndex = 0;
             // 
             // label1
@@ -189,7 +190,7 @@
             this.gBox1.Controls.Add(this.label1);
             this.gBox1.Controls.Add(this.lbl_TotSec);
             this.gBox1.Controls.Add(this.lbl_TotFrames);
-            this.gBox1.Location = new System.Drawing.Point(930, 107);
+            this.gBox1.Location = new System.Drawing.Point(930, 172);
             this.gBox1.Name = "gBox1";
             this.gBox1.Size = new System.Drawing.Size(180, 81);
             this.gBox1.TabIndex = 2;
@@ -531,7 +532,7 @@
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Location = new System.Drawing.Point(929, 12);
+            this.groupBox1.Location = new System.Drawing.Point(929, 77);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(180, 81);
             this.groupBox1.TabIndex = 7;
@@ -577,24 +578,35 @@
             this.DataPanel.Controls.Add(this.tb_Hdgdeg);
             this.DataPanel.Controls.Add(this.lbl_String_1);
             this.DataPanel.Controls.Add(this.tb_Rdist);
-            this.DataPanel.Location = new System.Drawing.Point(874, 202);
+            this.DataPanel.Location = new System.Drawing.Point(874, 268);
             this.DataPanel.Name = "DataPanel";
             this.DataPanel.Size = new System.Drawing.Size(251, 640);
             this.DataPanel.TabIndex = 2;
             this.DataPanel.TabStop = false;
             this.DataPanel.Text = "Frame Selecter";
             // 
+            // btn_OpenInNotepad
+            // 
+            this.btn_OpenInNotepad.Location = new System.Drawing.Point(923, 23);
+            this.btn_OpenInNotepad.Name = "btn_OpenInNotepad";
+            this.btn_OpenInNotepad.Size = new System.Drawing.Size(185, 32);
+            this.btn_OpenInNotepad.TabIndex = 8;
+            this.btn_OpenInNotepad.Text = "Open in Notepad++";
+            this.btn_OpenInNotepad.UseVisualStyleBackColor = true;
+            this.btn_OpenInNotepad.Click += new System.EventHandler(this.btn_OpenInNotepad_Click);
+            // 
             // frm_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1121, 854);
+            this.ClientSize = new System.Drawing.Size(1121, 920);
+            this.Controls.Add(this.btn_OpenInNotepad);
             this.Controls.Add(this.DataPanel);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.gBox1);
             this.Controls.Add(this.panel1);
             this.Name = "frm_Main";
-            this.Text = "Robot Telemetry Viewer V1.0.2";
+            this.Text = "Robot Telemetry Viewer V1.0.3";
             this.Load += new System.EventHandler(this.frm_Main_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
@@ -662,6 +674,7 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox DataPanel;
+        private System.Windows.Forms.Button btn_OpenInNotepad;
     }
 }
 

@@ -16,6 +16,7 @@ using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolBar;
 using System.Windows.Input;
+using System.Security.Cryptography;
 
 //05/15/23 Variable_Header branch
 //Adaptively assign telemetry header strings to textbox labels, and
@@ -28,6 +29,8 @@ namespace RobotTelemetryViewer
     {
         List<Frame> frames = new List<Frame>();
         List<string> telemetrystrings = new List<string>();
+
+        private string fileName;
 
         public static int NUM_FIXED_TELEMETRY_COLUMNS = 4;
 
@@ -144,12 +147,13 @@ namespace RobotTelemetryViewer
 
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            ofd.Title = "Robot Telemetry File";
+            ofd.Title = this.Text + ": Choose Robot Telemetry File";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                Debug.WriteLine(ofd.FileName);
+                fileName = ofd.FileName;
+                Debug.WriteLine(fileName);
 
-                using (StreamReader file = new StreamReader(ofd.FileName))
+                using (StreamReader file = new StreamReader(fileName))
                 {
                     int counter = 0;
                     string ln;
@@ -193,7 +197,7 @@ namespace RobotTelemetryViewer
                         //06/05/23 added to alert user and quit program
                         else if (ln.Contains("DISTANCES ONLY MODE"))
                         {
-                            MessageBox.Show("Distances Only Mode File - Quitting!\n" + ofd.FileName, this.Text + ": Bad File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("Distances Only Mode File - Quitting!\n" + fileName, this.Text + ": Bad File", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             this.Close();
                             Application.Exit();
                         }
@@ -243,7 +247,7 @@ namespace RobotTelemetryViewer
                         System.Diagnostics.Debug.WriteLine($"File has {counter} lines. Added {frames.Count} Frames");
                     }
 
-                    this.Text += ": " + ofd.FileName;
+                    this.Text += ": " + fileName;
                     lbl_TotFrames.Text = frames.Count.ToString();
                     lbl_TotSec.Text = frames[frames.Count - 1].Sec.ToString();
 
@@ -415,6 +419,11 @@ namespace RobotTelemetryViewer
                     }
                 }
             }
+        }
+
+        private void btn_OpenInNotepad_Click(object sender, EventArgs e)
+        {
+            Process.Start("notepad++.exe", "\"" + fileName + "\"");
         }
     }
 }
